@@ -1,0 +1,39 @@
+(defcfg
+ process-unmapped-keys yes
+ )
+
+(defsrc
+ g c r
+ caps a o e u h t n s
+ spc
+ )
+
+(defvar
+ tap-time 150
+ hold-time 150
+ )
+
+(defalias
+ caps-mod (tap-hold $tap-time $hold-time bspc caps)
+ a-mod (tap-hold $tap-time $hold-time a lmet)
+ o-mod (tap-hold $tap-time $hold-time o lalt)
+ e-mod (tap-hold $tap-time $hold-time e lshft)
+ u-mod (tap-hold $tap-time $hold-time u lctl)
+ h-mod (tap-hold $tap-time $hold-time h rctl)
+ t-mod (tap-hold $tap-time $hold-time t rshft)
+ n-mod (tap-hold $tap-time $hold-time n ralt)
+ s-mod (tap-hold $tap-time $hold-time s rmet)
+ spc-mod (tap-hold $tap-time $hold-time spc (layer-toggle layer-1))
+)
+
+(deflayer base
+ g c r
+ @caps-mod @a-mod @o-mod @e-mod @u-mod @h-mod @t-mod @n-mod @s-mod
+ @spc-mod
+)
+
+(deflayer layer-1
+ home up end
+ _ _ _ _ _ lft down rght _ 
+ _
+)
