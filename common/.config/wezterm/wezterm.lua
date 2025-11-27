@@ -1,20 +1,18 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
-local SOLID_RIGHT_ARROW = wezterm.nerdfonts.pl_left_hard_divider
-local SOLID_LEFT_ARROW = wezterm.nerdfonts.pl_right_hard_divider
+local TERMINAL = wezterm.nerdfonts.oct_terminal
+local CIRCLE_LEFT_HALF = wezterm.nerdfonts.ple_left_half_circle_thick
+local CIRCLE_RIGHT_HALF = wezterm.nerdfonts.ple_right_half_circle_thick
+local CALENDAR_CLOCK = wezterm.nerdfonts.md_calendar_clock
+local FOLDER = wezterm.nerdfonts.fa_folder_open
 
 -- Helper function to simplify keybinding
 local function bind(key, mods, action)
   return { key = key, mods = mods, action = action }
 end
 
-local function tab_title(tab_info)
-  local title = tab_info.tab_title
-  if title and #title > 0 then
-    return title
-  end
-
-  return tab_info.active_pane.title
+local function basename(s)
+  return string.gsub(s, "(.*[/\\])(.*)", "%2")
 end
 
 local scheme_colors = {
@@ -58,33 +56,105 @@ local colors = {
   inactive_tab_fg_color = scheme_colors.catppuccin.mocha.text,
 }
 
+local function set_status(tbl, bg, fg, text)
+  table.insert(tbl, { Background = { Color = bg } })
+  table.insert(tbl, { Foreground = { Color = fg } })
+  table.insert(tbl, { Text = text })
+end
+
+wezterm.on("update-status", function(window, pane)
+  local left_status = {}
+  local tty_name = pane:get_tty_name() or "Windows"
+
+  set_status(
+    left_status,
+    scheme_colors.catppuccin.mocha.crust,
+    scheme_colors.catppuccin.mocha.green,
+    " " .. CIRCLE_LEFT_HALF
+  )
+  set_status(left_status, scheme_colors.catppuccin.mocha.green, scheme_colors.catppuccin.mocha.crust, TERMINAL .. " ")
+  set_status(
+    left_status,
+    scheme_colors.catppuccin.mocha.surface0,
+    scheme_colors.catppuccin.mocha.text,
+    " " .. tty_name
+  )
+  set_status(
+    left_status,
+    scheme_colors.catppuccin.mocha.crust,
+    scheme_colors.catppuccin.mocha.surface0,
+    CIRCLE_RIGHT_HALF .. " "
+  )
+
+  window:set_left_status(wezterm.format(left_status))
+end)
+
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
-  local title = tab_title(tab)
-  title = wezterm.truncate_right(title, max_width - 6)
-  if tab.is_active then
-    return {
-      { Background = { Color = colors.tab_base_color } },
-      { Foreground = { Color = colors.active_tab_bg_color } },
-      { Text = SOLID_LEFT_ARROW },
-      { Background = { Color = colors.active_tab_bg_color } },
-      { Foreground = { Color = colors.active_tab_fg_color } },
-      { Text = " " .. tab.tab_index + 1 .. ":" .. title .. " " },
-      { Background = { Color = colors.active_tab_bg_color } },
-      { Foreground = { Color = colors.tab_base_color } },
-      { Text = SOLID_LEFT_ARROW },
-    }
+  local max_len = 9
+  local pane = tab.active_pane
+
+  local process_name = "?"
+  local process_info = pane.foreground_process_name:gsub(".exe$", "")
+  process_name = basename(process_info)
+  if #process_name > max_len then
+    process_name = process_name:sub(1, max_len - 1) .. ".."
   end
-  return {
-    { Background = { Color = colors.tab_base_color } },
-    { Foreground = { Color = colors.inactive_tab_bg_color } },
-    { Text = SOLID_LEFT_ARROW },
-    { Background = { Color = colors.inactive_tab_bg_color } },
-    { Foreground = { Color = colors.inactive_tab_fg_color } },
-    { Text = " " .. tab.tab_index + 1 .. ":" .. title .. " " },
-    { Background = { Color = colors.inactive_tab_bg_color } },
-    { Foreground = { Color = colors.tab_base_color } },
-    { Text = SOLID_LEFT_ARROW },
-  }
+  local tab_index = tab.tab_index + 1
+
+  local active_tabs = {}
+  local inactive_tabs = {}
+  if tab.is_active then
+    set_status(
+      active_tabs,
+      scheme_colors.catppuccin.mocha.crust,
+      scheme_colors.catppuccin.mocha.surface0,
+      " " .. CIRCLE_LEFT_HALF
+    )
+    set_status(
+      active_tabs,
+      scheme_colors.catppuccin.mocha.surface0,
+      scheme_colors.catppuccin.mocha.text,
+      process_name .. " "
+    )
+    set_status(
+      active_tabs,
+      scheme_colors.catppuccin.mocha.blue,
+      scheme_colors.catppuccin.mocha.crust,
+      " " .. tab_index
+    )
+    set_status(
+      active_tabs,
+      scheme_colors.catppuccin.mocha.crust,
+      scheme_colors.catppuccin.mocha.blue,
+      CIRCLE_RIGHT_HALF
+    )
+    return active_tabs
+  end
+  set_status(
+    inactive_tabs,
+    scheme_colors.catppuccin.mocha.crust,
+    scheme_colors.catppuccin.mocha.surface0,
+    " " .. CIRCLE_LEFT_HALF
+  )
+  set_status(
+    inactive_tabs,
+    scheme_colors.catppuccin.mocha.surface0,
+    scheme_colors.catppuccin.mocha.text,
+    process_name .. " "
+  )
+  set_status(
+    inactive_tabs,
+    scheme_colors.catppuccin.mocha.overlay0,
+    scheme_colors.catppuccin.mocha.text,
+    " " .. tab_index
+  )
+  set_status(
+    inactive_tabs,
+    scheme_colors.catppuccin.mocha.crust,
+    scheme_colors.catppuccin.mocha.overlay0,
+    CIRCLE_RIGHT_HALF
+  )
+  return inactive_tabs
 end)
 
 wezterm.on("update-right-status", function(window, pane)
@@ -92,29 +162,45 @@ wezterm.on("update-right-status", function(window, pane)
   local date = wezterm.strftime("%Y-%m-%d")
   local time = wezterm.strftime("%H:%M:%S")
 
-  -- Assemble like tmux status-right
-  local status = wezterm.format({
-    { Background = { Color = scheme_colors.catppuccin.mocha.teal } },
-    { Foreground = { Color = colors.tab_base_color } },
-    { Text = SOLID_RIGHT_ARROW },
-    { Background = { Color = scheme_colors.catppuccin.mocha.teal } },
-    { Foreground = { Color = scheme_colors.catppuccin.mocha.crust } },
-    { Text = " " .. date .. " " },
-    { Background = { Color = colors.tab_base_color } },
-    { Foreground = { Color = scheme_colors.catppuccin.mocha.teal } },
-    { Text = SOLID_RIGHT_ARROW },
-    { Background = { Color = scheme_colors.catppuccin.mocha.lavender } },
-    { Foreground = { Color = colors.tab_base_color } },
-    { Text = SOLID_RIGHT_ARROW },
-    { Background = { Color = scheme_colors.catppuccin.mocha.lavender } },
-    { Foreground = { Color = scheme_colors.catppuccin.mocha.crust } },
-    { Text = " " .. time .. " " },
-    { Background = { Color = colors.tab_base_color } },
-    { Foreground = { Color = scheme_colors.catppuccin.mocha.lavender } },
-    { Text = SOLID_RIGHT_ARROW },
-  })
+  -- Current dir
+  local current_dir = "?"
+  local cwd = pane:get_current_working_dir()
+  local full_path = cwd.path:gsub("/$", "")
+  local folder_name = basename(full_path)
 
-  window:set_right_status(status)
+  local status = {}
+
+  -- Assemble like tmux status-right
+  set_status(status, scheme_colors.catppuccin.mocha.crust, scheme_colors.catppuccin.mocha.peach, CIRCLE_LEFT_HALF)
+  set_status(status, scheme_colors.catppuccin.mocha.peach, scheme_colors.catppuccin.mocha.crust, FOLDER .. " ")
+  set_status(status, scheme_colors.catppuccin.mocha.surface0, scheme_colors.catppuccin.mocha.text, " ../" .. folder_name)
+  set_status(
+    status,
+    scheme_colors.catppuccin.mocha.crust,
+    scheme_colors.catppuccin.mocha.surface0,
+    CIRCLE_RIGHT_HALF .. " "
+  )
+  set_status(status, scheme_colors.catppuccin.mocha.crust, scheme_colors.catppuccin.mocha.lavender, CIRCLE_LEFT_HALF)
+  set_status(
+    status,
+    scheme_colors.catppuccin.mocha.lavender,
+    scheme_colors.catppuccin.mocha.crust,
+    CALENDAR_CLOCK .. " "
+  )
+  set_status(
+    status,
+    scheme_colors.catppuccin.mocha.surface0,
+    scheme_colors.catppuccin.mocha.text,
+    " " .. date .. " " .. time
+  )
+  set_status(
+    status,
+    scheme_colors.catppuccin.mocha.crust,
+    scheme_colors.catppuccin.mocha.surface0,
+    CIRCLE_RIGHT_HALF .. " "
+  )
+
+  window:set_right_status(wezterm.format(status))
 end)
 
 config = {
