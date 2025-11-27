@@ -87,6 +87,36 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 	}
 end)
 
+wezterm.on("update-right-status", function(window, pane)
+	-- Time/Date
+	local date = wezterm.strftime("%Y-%m-%d")
+	local time = wezterm.strftime("%H:%M:%S")
+
+	-- Assemble like tmux status-right
+	local status = wezterm.format({
+		{ Background = { Color = scheme_colors.catppuccin.mocha.teal } },
+		{ Foreground = { Color = colors.tab_base_color } },
+		{ Text = SOLID_RIGHT_ARROW },
+		{ Background = { Color = scheme_colors.catppuccin.mocha.teal } },
+		{ Foreground = { Color = scheme_colors.catppuccin.mocha.crust } },
+		{ Text = " " .. date .. " " },
+		{ Background = { Color = colors.tab_base_color } },
+		{ Foreground = { Color = scheme_colors.catppuccin.mocha.teal } },
+		{ Text = SOLID_RIGHT_ARROW },
+		{ Background = { Color = scheme_colors.catppuccin.mocha.lavender } },
+		{ Foreground = { Color = colors.tab_base_color } },
+		{ Text = SOLID_RIGHT_ARROW },
+		{ Background = { Color = scheme_colors.catppuccin.mocha.lavender } },
+		{ Foreground = { Color = scheme_colors.catppuccin.mocha.crust } },
+		{ Text = " " .. time .. " " },
+		{ Background = { Color = colors.tab_base_color } },
+		{ Foreground = { Color = scheme_colors.catppuccin.mocha.lavender } },
+		{ Text = SOLID_RIGHT_ARROW },
+	})
+
+	window:set_right_status(status)
+end)
+
 config = {
 	-- Appearance: Catppuccin Mocha with black background
 	color_scheme = "Catppuccin Mocha",
