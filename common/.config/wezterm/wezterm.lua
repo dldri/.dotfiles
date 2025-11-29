@@ -5,6 +5,7 @@ local CIRCLE_LEFT_HALF = wezterm.nerdfonts.ple_left_half_circle_thick
 local CIRCLE_RIGHT_HALF = wezterm.nerdfonts.ple_right_half_circle_thick
 local CALENDAR_CLOCK = wezterm.nerdfonts.md_calendar_clock
 local FOLDER = wezterm.nerdfonts.fa_folder_open
+local BOLT = wezterm.nerdfonts.fa_bolt
 
 -- Helper function to simplify keybinding
 local function bind(key, mods, action)
@@ -163,7 +164,6 @@ wezterm.on("update-right-status", function(window, pane)
   local time = wezterm.strftime("%H:%M:%S")
 
   -- Current dir
-  local current_dir = "?"
   local cwd = pane:get_current_working_dir()
   local full_path = cwd.path:gsub("/$", "")
   local folder_name = basename(full_path)
@@ -171,6 +171,16 @@ wezterm.on("update-right-status", function(window, pane)
   local status = {}
 
   -- Assemble like tmux status-right
+  if window:leader_is_active() then
+    set_status(status, scheme_colors.catppuccin.mocha.crust, scheme_colors.catppuccin.mocha.teal, CIRCLE_LEFT_HALF)
+    set_status(status, scheme_colors.catppuccin.mocha.teal, scheme_colors.catppuccin.mocha.crust, BOLT)
+    set_status(
+      status,
+      scheme_colors.catppuccin.mocha.crust,
+      scheme_colors.catppuccin.mocha.teal,
+      CIRCLE_RIGHT_HALF .. " "
+    )
+  end
   set_status(status, scheme_colors.catppuccin.mocha.crust, scheme_colors.catppuccin.mocha.peach, CIRCLE_LEFT_HALF)
   set_status(status, scheme_colors.catppuccin.mocha.peach, scheme_colors.catppuccin.mocha.crust, FOLDER .. " ")
   set_status(status, scheme_colors.catppuccin.mocha.surface0, scheme_colors.catppuccin.mocha.text, " ../" .. folder_name)
