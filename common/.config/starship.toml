@@ -186,6 +186,29 @@ format = '\[[$symbol$cloud(\($project\))]($style)\]'
 
 [os]
 format = '\[[$symbol]($style)\]'
+disabled = false
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
 
 [package]
 format = '\[[$symbol$version]($style)\]'
@@ -263,6 +286,7 @@ format = '\[[$time]($style)\]'
 format = '\[[$symbol($version)]($style)\]'
 
 [username]
+show_always = true
 format = '\[[$user]($style)\]'
 
 [vagrant]
