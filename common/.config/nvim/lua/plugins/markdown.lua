@@ -21,13 +21,22 @@ return {
           path = '~/notes/',
         },
       },
-
-      -- see below for full list of options 👇
+      ui = {
+        enable = false,
+      },
+      callbacks = {
+        enter_note = function(note)
+          vim.keymap.set('n', '<leader>bl', '<cmd>Obsidian backlinks<cr>', {
+            buffer = note.bufnr,
+            desc = 'Show backlinks',
+          })
+        end,
+      },
     },
   },
   {
     'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' },
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     opts = {},
