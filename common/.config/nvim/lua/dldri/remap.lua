@@ -23,7 +23,7 @@ vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
--- PERF: [[Custom Keymaps]]
+-- [[Custom Keymaps]]
 
 -- Exit file to go back to netrw
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = '[P]roject [V]iew' })
@@ -54,4 +54,34 @@ vim.keymap.set('n', '<leader>yp', ':let @+ = getcwd()<CR>', { noremap = true, si
 
 -- Adjust increment to avoid conflict with Wezterm
 vim.keymap.set('n', '<C-i>', '<C-a>', { noremap = true, silent = true, desc = 'Increment number' })
+
+-- Copy filepath to clipboard
+local function copy_path(type)
+  local path
+  if type == 'relative' then
+    path = vim.fn.expand '%:.'
+  elseif type == 'full' then
+    path = vim.fn.expand '%:p'
+  elseif type == 'filename' then
+    path = vim.fn.expand '%:t'
+  elseif type == 'dir' then
+    path = vim.fn.expand '%:p:h'
+  end
+
+  vim.fn.setreg('+', path)
+  vim.notify('Copied: ' .. path, vim.log.levels.INFO)
+end
+
+vim.keymap.set('n', '<leader>cp', function()
+  copy_path 'relative'
+end, { desc = '[c]opy relative [p]ath' })
+vim.keymap.set('n', '<leader>cP', function()
+  copy_path 'full'
+end, { desc = '[c]opy full [P]ath' })
+vim.keymap.set('n', '<leader>cf', function()
+  copy_path 'filename'
+end, { desc = '[c]opy [f]ilename' })
+vim.keymap.set('n', '<leader>cd', function()
+  copy_path 'dir'
+end, { desc = '[c]opy [d]irectory path' })
 -- ===== ===== ===== ===== =====
