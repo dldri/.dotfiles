@@ -24,6 +24,36 @@ return {
       ui = {
         enable = false,
       },
+
+      note_id_func = function(title)
+        local slug = title
+          :gsub('^%s*(.-)%s*$', '%1') -- trim
+          :gsub('%s+', '-') -- spaces → hyphens
+          :gsub('[^%w%-]', '') -- remove non-alphanum/hyphen
+          :gsub('-+', '-') -- collapse hyphens
+          :gsub('^-+', '') -- no leading hyphens
+          :gsub('-+$', '') -- no trailing hyphens
+          :lower()
+        if slug == '' then
+          slug = require('obsidian.builtin').zettel_id() -- safety for empty slugs
+        end
+        return slug
+      end,
+
+      frontmatter = {
+        enabled = true,
+        sort = { 'id', 'aliases', 'tags' },
+        func = function(note)
+          local fm = require('obsidian.builtin').frontmatter(note)
+          if note.title and fm.aliases then
+            fm.aliases = vim.tbl_filter(function(a)
+              return a ~= note.title
+            end, fm.aliases)
+          end
+          return fm
+        end,
+      },
+
       callbacks = {
         enter_note = function(note)
           vim.keymap.set('n', '<leader>bl', '<cmd>Obsidian backlinks<cr>', {
