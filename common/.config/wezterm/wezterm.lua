@@ -7,6 +7,14 @@ local CALENDAR_CLOCK = wezterm.nerdfonts.md_calendar_clock
 local FOLDER = wezterm.nerdfonts.fa_folder_open
 local BOLT = wezterm.nerdfonts.fa_bolt
 
+-- Set decoration based on OS
+-- NONE for Linux
+-- RESIZE for Windows
+local target_decorations = "NONE"
+if wezterm.target_triple:find("windows") then
+  target_decorations = "RESIZE"
+end
+
 -- Helper function to simplify keybinding
 local function bind(key, mods, action)
   return { key = key, mods = mods, action = action }
@@ -246,7 +254,7 @@ config = {
 
   -- No minimize/close/expand buttons.
   -- RESIZE to allow Komorebi to manage the window
-  window_decorations = "RESIZE",
+  window_decorations = target_decorations,
   window_background_opacity = 0.95,       -- Slight transparency for sleek look
   default_cursor_style = "BlinkingBlock", -- Sleek cursor
 
