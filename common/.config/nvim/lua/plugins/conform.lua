@@ -37,6 +37,7 @@ return {
       typescriptreact = { 'biome-check' },
       json = { 'biome-check' },
       jsonc = { 'biome-check' },
+      dockerfile = { 'dockerfmt' },
     },
   },
 }
