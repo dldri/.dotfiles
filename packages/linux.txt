@@ -1,0 +1,23 @@
+# Core tools
+git
+curl
+wget
+base-devel
+stow
+yay
+
+# Terminal & Shell
+wezterm
+starship
+zoxide
+fzf
+ripgrep
+
+# Editor
+neovim
+
+# File manager
+yazi
+
+# Archiving
+p7zip

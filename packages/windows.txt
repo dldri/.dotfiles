@@ -1,0 +1,24 @@
+# Terminal & Shell
+wezterm
+starship
+git
+curl
+wget
+
+# Editor
+neovim
+
+# File manager
+yazi
+
+# Window management
+komorebi
+kanata
+whkd
+
+# PowerShell utilities
+oh-my-posh
+zoxide
+
+# Archiving
+7zip
