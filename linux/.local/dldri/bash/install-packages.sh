@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-INSTALL_LIST="$REPO_ROOT/packages/linux.txt"
+INSTALL_LIST="$REPO_ROOT/packages/linux-install.txt"
 
 source "$SCRIPT_DIR/lib/utils.sh"
 

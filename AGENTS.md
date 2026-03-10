@@ -68,7 +68,7 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
 3. Script execution order:
    a. 00-check-deps.sh - Verify prerequisites (bash, git, sudo, base-devel)
    b. 01-cleanup.sh - Remove unwanted default packages (user-defined)
-   c. 02-packages.sh - Install packages from ../../packages/linux.txt
+   c. 02-packages.sh - Install packages from ../../packages/linux-install.txt
    d. 03-stow.sh - Symlink dotfiles: stow common linux
    e. 04-post-setup.sh - Optional finalization (placeholder)
 ```
@@ -86,7 +86,7 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
 - Packages are platform-specific (AUR names for Linux, Chocolatey names for Windows)
 
 ### Maintenance
-- **`packages/linux.txt`**: Arch/AUR packages. Order doesn't matter but group logically.
+- **`packages/linux-install.txt`**: Arch/AUR packages. Order doesn't matter but group logically.
 - **`packages/windows.txt`**: Chocolatey package names. Validate with `choco search <pkg>`.
 - **`packages/common.txt`**: Cross-platform tools that should exist on all systems. Used to keep package lists in sync.
 
@@ -197,7 +197,7 @@ When working in this repository:
 
 ## Questions for Future Agents
 
-- Should we split `packages/linux.txt` into `pacman.txt` (official repos) and `aur.txt` (AUR) for clarity?
+- Should we split `packages/linux-install.txt` into `pacman.txt` (official repos) and `aur.txt` (AUR) for clarity?
 - Should `bootstrap.sh` accept arguments (e.g., `--skip-cleanup`, `--dry-run`)?
 - Should we add a `--uninstall` mode to remove all dotfiles and packages?
 - Should Windows bootstrap use PowerShell or WSL? (Current configs are native Windows)

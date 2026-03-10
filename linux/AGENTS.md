@@ -16,7 +16,7 @@ linux/.local/dldri/bash/
 └── tasks/               # Individual setup steps (numbered for order)
     ├── 00-check-deps.sh   # Verify prerequisites (bash, git, sudo, base-devel)
     ├── 01-cleanup.sh      # Remove unwanted default packages (PLACEHOLDER)
-    ├── 02-packages.sh     # Install packages from ../../packages/linux.txt
+    ├── 02-packages.sh     # Install packages from ../../packages/linux-install.txt
     ├── 03-stow.sh         # Symlink dotfiles: stow common linux
     └── 04-post-setup.sh   # Optional finalization (PLACEHOLDER)
 ```
@@ -64,7 +64,7 @@ Template structure with comments showing common Arch cleanup:
 ```
 
 ### 02-packages.sh
-- Read package list from `../../packages/linux.txt`
+- Read package list from `../../packages/linux-install.txt`
 - Skip blank lines and comments (`#`)
 - Install each package via `yay -S --noconfirm --needed <pkg>`
 - Print progress: "Installing <pkg>..." and "✓ <pkg> installed" or "⊘ <pkg> already up-to-date"
