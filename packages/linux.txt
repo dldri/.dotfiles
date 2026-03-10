@@ -1,23 +1,9 @@
-# Core tools
-git
+# Core tools (not included in Omarchy base install)
 curl
-wget
-base-devel
 stow
-yay
 
-# Terminal & Shell
-wezterm
-starship
-zoxide
-fzf
-ripgrep
+# Archiving (not included in Omarchy base install)
+7zip
 
-# Editor
-neovim
-
-# File manager
-yazi
-
-# Archiving
-p7zip
+# Gaming
+gamemoderun
