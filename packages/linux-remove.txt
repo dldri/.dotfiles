@@ -1,0 +1,11 @@
+# Packages to remove from Omarchy base installation
+# One package name per line
+# Lines starting with # are comments
+# Blank lines are ignored
+
+1password-beta
+1password-cli
+alacritty
+obsidian
+signal-desktop
+typora
