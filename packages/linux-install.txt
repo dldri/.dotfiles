@@ -7,3 +7,6 @@ stow
 
 # Gaming
 gamemoderun
+
+# Shell & Prompt
+starship
