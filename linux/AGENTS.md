@@ -21,7 +21,7 @@ linux/.local/dldri/bash/
     └── 04-post-setup.sh   # Optional finalization (PLACEHOLDER)
 ```
 
-**Note**: The current `linux/.local/dldri/bash/scripts/` directory (containing `install-stow.sh`, `install-oh-my-posh.sh`) is deprecated and will be replaced by this new structure.
+**Note**: The legacy scripts (`setup.sh`, `install-packages.sh`, `remove-packages.sh`) are deprecated. Use `bootstrap.sh` for full system setup. Individual task scripts remain available for granular execution.
 
 ## Entry Point
 
@@ -51,17 +51,10 @@ linux/.local/dldri/bash/
 - Prompt user to install missing deps or abort
 
 ### 01-cleanup.sh
-**PLACEHOLDER** - User will define later.
-Template structure with comments showing common Arch cleanup:
-```bash
-#!/bin/bash
-# Optional: Remove unwanted default packages
-# Examples:
-# - Remove nano if using neovim
-# - Remove pulseaudio if using pipewire
-# - Remove man-db if using tldr
-# User will specify exact package names
-```
+- Reads `packages/linux-remove.txt` (blank lines and `#` comments ignored)
+- For each package: if installed → `sudo pacman -R --noconfirm`
+- Then removes orphaned dependencies via `pacman -Qdtq | xargs sudo pacman -Rns --noconfirm`
+- Safe and idempotent: skips packages not installed
 
 ### 02-packages.sh
 - Read package list from `../../packages/linux-install.txt`
@@ -79,12 +72,10 @@ Template structure with comments showing common Arch cleanup:
 - Report success/failures
 
 ### 04-post-setup.sh
-**PLACEHOLDER** - User will define later.
-Possible tasks (to be filled):
-- `nvim --headless +'Lazy! sync' +qa`
-- Generate shell config (`.bashrc`, `.zshrc`) with starship, zoxide
-- Set up yazi keymap cache
-- Enable/start services (if any)
+- Prints a timestamped bootstrap completion summary
+- Suggests next steps (shell reload, Neovim Lazy sync, Hyprland reboot)
+- Cleans temporary build directories (e.g., `/tmp/yay-build`)
+- Informational only; no interactive prompts
 
 ## Standards
 
