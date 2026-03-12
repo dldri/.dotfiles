@@ -6,7 +6,8 @@ stow
 7zip
 
 # Gaming
-gamemoderun
+gamemode
+lib32-gamemode
 
 # Shell & Prompt
 starship
