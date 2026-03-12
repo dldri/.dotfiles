@@ -66,10 +66,13 @@ linux/.local/dldri/bash/
 ### 03-stow.sh
 - Change to repo root (`cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ../..)"`)
 - Create backup of any existing conflicting dotfiles? (Decision needed)
-- Run: `stow -t $HOME --simulate common linux` → show plan
+- Run: `stow -t $HOME --simulate common linux` → show plan (includes `--override xdg-terminals.list`)
 - Prompt user to continue or abort
-- Run: `stow -t $HOME --verbose common linux`
+- Run: `stow -t $HOME --verbose --override xdg-terminals.list common linux`
 - Report success/failures
+
+### Notes
+- **Overrides**: `stow.sh` uses `--override xdg-terminals.list` to ensure the terminal preference file is always replaced with the symlink. This is intentional for config files that should be fully managed declaratively. Future: maintain a `packages/stow-overrides.txt` to make this dynamic.
 
 ### 04-post-setup.sh
 - Prints a timestamped bootstrap completion summary

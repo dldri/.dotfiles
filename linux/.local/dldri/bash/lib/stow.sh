@@ -31,7 +31,10 @@ stow_execute() {
     log_info "Executing stow..."
     (
         cd "$repo_root"
-        if stow -t "$HOME" --verbose "${packages[@]}"; then
+        # Use --override for specific files that should always be symlinked
+        # Known overrides: xdg-terminals.list (Linux-only terminal preference)
+        # To add more dynamic overrides, consider: packages/stow-overrides.txt
+        if stow -t "$HOME" --verbose --override xdg-terminals.list "${packages[@]}"; then
             log_success "Stow completed successfully"
             return 0
         else
