@@ -1,6 +1,5 @@
 # Core tools (install on all platforms)
 neovim
-wezterm
 starship
 yazi
 zoxide

@@ -10,3 +10,9 @@ gamemoderun
 
 # Shell & Prompt
 starship
+
+# Terminal (AUR)
+wezterm-git
+
+# Fonts (Nerd Fonts for icons)
+ttf-nerd-fonts-symbols-mono
