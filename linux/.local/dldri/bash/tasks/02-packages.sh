@@ -67,15 +67,15 @@ FAILED=0
 for pkg in "${ALL_PKGS[@]}"; do
     if is_installed "$pkg"; then
         log_info "$pkg already installed, skipping"
-        ((SKIPPED++))
+        : $((SKIPPED++))
     else
         log_info "Installing $pkg..."
         if yay -S --noconfirm --needed "$pkg"; then
-            ((INSTALLED++))
+            : $((INSTALLED++))
             log_success "Installed $pkg"
         else
             log_error "Failed to install $pkg"
-            ((FAILED++))
+            : $((FAILED++))
         fi
     fi
 done
