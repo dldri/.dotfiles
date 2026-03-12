@@ -1,0 +1,11 @@
+# Dynamic stow overrides (Linux-specific)
+# Paths relative to the linux package root
+# These files/directories will always be overridden during stow
+
+xdg-terminals.list
+hypr/autostart.conf
+hypr/bindings.conf
+hypr/hypridle.conf
+hypr/input.conf
+hypr/looknfeel.conf
+hypr/monitors.conf

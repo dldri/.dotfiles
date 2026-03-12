@@ -16,6 +16,23 @@ echo "Completed: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "========================================"
 echo ""
 
+# Reload hypridle service if installed and running
+if pacman -Q hypridle &>/dev/null; then
+    if systemctl --user is-active --quiet hypridle.service; then
+        log_info "Reloading hypridle service to apply config changes..."
+        if systemctl --user restart hypridle.service; then
+            log_success "hypridle service restarted"
+        else
+            log_error "Failed to restart hypridle service"
+        fi
+    else
+        log_info "hypridle service is not running (will start on next Hyprland session)"
+    fi
+else
+    log_info "hypridle not installed; skipping service reload"
+fi
+echo ""
+
 # Optional: Sync Neovim plugins if nvim is installed
 if command -v nvim &>/dev/null; then
     log_info "Neovim detected. You may want to sync plugins:"

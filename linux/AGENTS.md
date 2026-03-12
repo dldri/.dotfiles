@@ -29,6 +29,7 @@ linux/.local/dldri/bash/
 **Location**: `~/.dotfiles/linux/.local/dldri/bash/` (run from repo root or detect path)
 **Usage**: `./bootstrap.sh`
 **Behavior**:
+
 - Executes tasks in order (00 → 04)
 - Exits on error (`set -e`)
 - Prints colored status messages
@@ -46,17 +47,20 @@ linux/.local/dldri/bash/
 ## Task Specifications
 
 ### 00-check-deps.sh
+
 - Check for `bash`, `git`, `sudo`, `base-devel` (makepkg, gcc, etc.)
 - If `yay` missing, check if can be installed from AUR (requires base-devel)
 - Prompt user to install missing deps or abort
 
 ### 01-cleanup.sh
+
 - Reads `packages/linux-remove.txt` (blank lines and `#` comments ignored)
 - For each package: if installed → `sudo pacman -R --noconfirm`
 - Then removes orphaned dependencies via `pacman -Qdtq | xargs sudo pacman -Rns --noconfirm`
 - Safe and idempotent: skips packages not installed
 
 ### 02-packages.sh
+
 - Read package list from `../../packages/linux-install.txt`
 - Skip blank lines and comments (`#`)
 - Install each package via `yay -S --noconfirm --needed <pkg>`
@@ -64,17 +68,20 @@ linux/.local/dldri/bash/
 - Handle failures gracefully (continue to next package, report errors at end)
 
 ### 03-stow.sh
+
 - Change to repo root (`cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ../..)"`)
 - Create backup of any existing conflicting dotfiles? (Decision needed)
-- Run: `stow -t $HOME --simulate common linux` → show plan (includes `--override xdg-terminals.list`)
+- Run: `stow -t $HOME --simulate common linux` → show plan
 - Prompt user to continue or abort
-- Run: `stow -t $HOME --verbose --override xdg-terminals.list common linux`
+- Run: `stow -t $HOME --verbose common linux` (with dynamic overrides from `packages/linux-overrides.txt`)
 - Report success/failures
 
 ### Notes
-- **Overrides**: `stow.sh` uses `--override xdg-terminals.list` to ensure the terminal preference file is always replaced with the symlink. This is intentional for config files that should be fully managed declaratively. Future: maintain a `packages/stow-overrides.txt` to make this dynamic.
+
+- **Overrides**: `stow.sh` reads `packages/linux-overrides.txt` for patterns that should always be overridden (e.g., `xdg-terminals.list`, `hypr/*.conf`). This ensures terminal preferences and Hyprland configs are fully managed declaratively. Add new patterns to that file as needed.
 
 ### 04-post-setup.sh
+
 - Prints a timestamped bootstrap completion summary
 - Suggests next steps (shell reload, Neovim Lazy sync, Hyprland reboot)
 - Cleans temporary build directories (e.g., `/tmp/yay-build`)
@@ -91,6 +98,7 @@ linux/.local/dldri/bash/
 ## Integration with Root AGENTS.md
 
 This folder follows the repository-wide conventions defined in `../AGENTS.md`. See that file for:
+
 - Package list format and maintenance
 - Stow strategy details
 - Overall bootstrap workflow

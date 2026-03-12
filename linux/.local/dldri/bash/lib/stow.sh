@@ -11,15 +11,26 @@ get_repo_root() {
 stow_simulate() {
     local repo_root="$(get_repo_root)"
     local packages=("$@")
+    local overrides_file="$repo_root/../../packages/linux-overrides.txt"
+    local override_args=()
 
     log_info "Stow simulation (dry-run)"
     log_info "Target: \$HOME"
     log_info "Packages: ${packages[*]}"
     echo ""
 
+    # Load dynamic overrides if file exists
+    if [[ -f "$overrides_file" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip blank lines and comments
+            [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+            override_args+=("--override" "$line")
+        done < "$overrides_file"
+    fi
+
     (
         cd "$repo_root"
-        stow -t "$HOME" --simulate "${packages[@]}"
+        stow -t "$HOME" --simulate "${override_args[@]}" "${packages[@]}"
     )
 }
 
@@ -27,14 +38,27 @@ stow_simulate() {
 stow_execute() {
     local repo_root="$(get_repo_root)"
     local packages=("$@")
+    local overrides_file="$repo_root/../../packages/linux-overrides.txt"
+    local override_args=()
 
     log_info "Executing stow..."
+
+    # Load dynamic overrides if file exists
+    if [[ -f "$overrides_file" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip blank lines and comments
+            [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+            override_args+=("--override" "$line")
+        done < "$overrides_file"
+
+        if [[ ${#override_args[@]} -gt 0 ]]; then
+            log_info "Applying ${#override_args[@]} override(s)"
+        fi
+    fi
+
     (
         cd "$repo_root"
-        # Use --override for specific files that should always be symlinked
-        # Known overrides: xdg-terminals.list (Linux-only terminal preference)
-        # To add more dynamic overrides, consider: packages/stow-overrides.txt
-        if stow -t "$HOME" --verbose --override xdg-terminals.list "${packages[@]}"; then
+        if stow -t "$HOME" --verbose "${override_args[@]}" "${packages[@]}"; then
             log_success "Stow completed successfully"
             return 0
         else
