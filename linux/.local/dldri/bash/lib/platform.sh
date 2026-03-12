@@ -13,7 +13,7 @@ is_arch() {
 
 # Check if base-devel group is installed
 has_base_devel() {
-    pacman -Qg base-devel &>/dev/null
+    pacman -Q base-devel &>/dev/null
 }
 
 # Install base-devel group
