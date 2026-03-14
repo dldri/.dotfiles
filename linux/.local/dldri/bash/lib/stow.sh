@@ -99,7 +99,7 @@ stow_simulate_unit() {
 
     (
         cd "$repo_root"
-        stow -t "$target_base" --simulate "${override_args[@]}" "${patterns[@]}"
+        stow -t "$target_base" --simulate "$dir_arg" "${override_args[@]}" "${patterns[@]}"
     )
 }
 
@@ -126,7 +126,7 @@ stow_execute_unit() {
 
     (
         cd "$repo_root"
-        if stow -t "$target_base" --verbose "${override_args[@]}" "${patterns[@]}"; then
+        if stow -t "$target_base" --verbose "$dir_arg" "${override_args[@]}" "${patterns[@]}"; then
             log_success "Stowed: $package (subdir: ${subdir:-.})"
             return 0
         else
@@ -158,7 +158,7 @@ stow_packages() {
             continue
         fi
         # Top-level unit
-        units+=("$pkg ''")
+        units+=("$pkg")
         # .config children
         if [[ -d "$package_dir/.config" ]]; then
             while IFS= read -r child; do
