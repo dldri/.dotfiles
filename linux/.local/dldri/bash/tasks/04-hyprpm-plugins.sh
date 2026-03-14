@@ -21,6 +21,14 @@ if ! command -v hyprpm &>/dev/null; then
     exit 1
 fi
 
+# Update hyprpm plugin database to match Hyprland headers
+log_info "Updating hyprpm database..."
+if hyprpm update; then
+    log_success "hyprpm updated"
+else
+    log_warn "hyprpm update failed - continuing anyway (plugins may not be compatible)"
+fi
+
 # Read plugin list
 if [[ ! -f "$PLUGINS_LIST" ]]; then
     log_warn "Plugins list not found: $PLUGINS_LIST - skipping"
