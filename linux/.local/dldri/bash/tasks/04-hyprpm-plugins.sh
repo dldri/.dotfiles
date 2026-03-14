@@ -47,7 +47,7 @@ declare -A enabled_plugins=()    # name -> true (only for enabled)
 current_plugin=""
 while IFS= read -r line || [[ -n "$line" ]]; do
     # Extract plugin name from lines containing "Plugin <name>"
-    if [[ $line =~ Plugin[[:space:]]+(.+) ]]; then
+    if [[ $line =~ Plugin[[:space:]]+([^[:space:]]+) ]]; then
         current_plugin="${BASH_REMATCH[1]}"
     # Extract enabled status from lines containing "enabled: <status>"
     elif [[ $line =~ enabled:[[:space:]]*(true|false) ]] && [[ -n "$current_plugin" ]]; then
@@ -100,6 +100,11 @@ declare -A enabled_during_add=()
 # 1. Remove plugins not in desired list
 for plugin in "${to_remove[@]}"; do
     log_info "Removing plugin: $plugin"
+    # Disable first if enabled, since hyprpm remove fails on enabled plugins
+    if [[ "${enabled_plugins[$plugin]:-}" == "true" ]]; then
+        log_info "Disabling plugin: $plugin"
+        hyprpm disable "$plugin" 2>/dev/null || true
+    fi
     if hyprpm remove "$plugin" 2>/dev/null; then
         log_success "  Removed $plugin"
         ((REMOVED++))
@@ -109,47 +114,17 @@ for plugin in "${to_remove[@]}"; do
     fi
 done
 
-# 2. Add new plugins
+# 2. Add new plugins (those not yet installed)
 for plugin in "${to_add[@]}"; do
     uri="${desired_plugins[$plugin]}"
     log_info "Adding plugin: $plugin from $uri"
-
-    # Check if plugin directory already exists (from previous manual install or failed run)
-    # Standard hyprpm plugin location: ~/.local/share/hyprpm/plugins/<name>
-    PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/hyprpm/plugins/$plugin"
-
-    if [[ -d "$PLUGIN_DIR" ]]; then
-        log_warn "Plugin directory already exists: $PLUGIN_DIR"
-        log_info "Attempting to enable existing plugin directly..."
-        if hyprpm enable "$plugin"; then
-            log_success "  Enabled existing plugin $plugin"
-            ((ADDED++))
-            ((ENABLED++))
-        else
-            log_error "  Failed to enable existing plugin $plugin. Will try fresh add."
-            # Try to remove the existing directory and add again
-            if [[ -d "$PLUGIN_DIR" ]]; then
-                log_info "Removing existing directory: $PLUGIN_DIR"
-                rm -rf "$PLUGIN_DIR"
-            fi
-            if hyprpm add "$uri"; then
-                log_success "  Added $plugin"
-                ((ADDED++))
-            else
-                log_error "  Failed to add $plugin"
-                ((FAILED++))
-                continue
-            fi
-        fi
+    if hyprpm add "$uri"; then
+        log_success "  Added $plugin"
+        ((ADDED++))
     else
-        if hyprpm add "$uri"; then
-            log_success "  Added $plugin"
-            ((ADDED++))
-        else
-            log_error "  Failed to add $plugin"
-            ((FAILED++))
-            continue
-        fi
+        log_error "  Failed to add $plugin"
+        ((FAILED++))
+        continue
     fi
 done
 
