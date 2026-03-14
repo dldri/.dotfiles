@@ -3,6 +3,7 @@ curl
 
 # Archiving (not included in Omarchy base install)
 7zip
+cpio
 
 # Gaming
 gamemode
@@ -10,6 +11,9 @@ lib32-gamemode
 
 # Shell & Prompt
 starship
+
+# Development
+g++9-bin
 
 # Terminal (AUR)
 wezterm-git
