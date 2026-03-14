@@ -96,6 +96,9 @@ ENABLED=0
 SKIPPED=0
 FAILED=0
 
+# Track which plugins we enabled during add phase to avoid double-counting
+declare -A enabled_during_add=()
+
 # 1. Remove plugins not in desired list
 for plugin in "${to_remove[@]}"; do
     log_info "Removing plugin: $plugin"
@@ -112,18 +115,53 @@ done
 for plugin in "${to_add[@]}"; do
     uri="${desired_plugins[$plugin]}"
     log_info "Adding plugin: $plugin from $uri"
-    if hyprpm add "$uri"; then
-        log_success "  Added $plugin"
-        ((ADDED++))
+
+    # Check if plugin directory already exists (from previous manual install or failed run)
+    # Standard hyprpm plugin location: ~/.local/share/hyprpm/plugins/<name>
+    PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/hyprpm/plugins/$plugin"
+
+    if [[ -d "$PLUGIN_DIR" ]]; then
+        log_warn "Plugin directory already exists: $PLUGIN_DIR"
+        log_info "Attempting to enable existing plugin directly..."
+        if hyprpm enable "$plugin"; then
+            log_success "  Enabled existing plugin $plugin"
+            ((ADDED++))
+            ((ENABLED++))
+        else
+            log_error "  Failed to enable existing plugin $plugin. Will try fresh add."
+            # Try to remove the existing directory and add again
+            if [[ -d "$PLUGIN_DIR" ]]; then
+                log_info "Removing existing directory: $PLUGIN_DIR"
+                rm -rf "$PLUGIN_DIR"
+            fi
+            if hyprpm add "$uri"; then
+                log_success "  Added $plugin"
+                ((ADDED++))
+            else
+                log_error "  Failed to add $plugin"
+                ((FAILED++))
+                continue
+            fi
+        fi
     else
-        log_error "  Failed to add $plugin"
-        ((FAILED++))
-        continue
+        if hyprpm add "$uri"; then
+            log_success "  Added $plugin"
+            ((ADDED++))
+        else
+            log_error "  Failed to add $plugin"
+            ((FAILED++))
+            continue
+        fi
     fi
 done
 
 # 3. Enable plugins that should be enabled
 for plugin in "${to_enable[@]}"; do
+    # Skip if we already enabled it during add phase
+    if [[ -n "${enabled_during_add[$plugin]:-}" ]]; then
+        log_info "Plugin $plugin already enabled during add phase, skipping"
+        continue
+    fi
     log_info "Enabling plugin: $plugin"
     if hyprpm enable "$plugin"; then
         log_success "  Enabled $plugin"
