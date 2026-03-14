@@ -107,10 +107,10 @@ for plugin in "${to_remove[@]}"; do
     fi
      if hyprpm remove "$plugin" 2>/dev/null; then
         log_success "  Removed $plugin"
-        ((REMOVED++))
+        REMOVED=$((REMOVED+1))
     else
         log_warn "  Failed to remove $plugin (may not exist)"
-        ((FAILED++))
+        FAILED=$((FAILED+1))
     fi
 done
 
@@ -125,12 +125,12 @@ for plugin in "${to_add[@]}"; do
             # Plugin is installed, will be handled in enable phase
         else
             log_error "  Failed to add $plugin: $output"
-            ((FAILED++))
+            FAILED=$((FAILED+1))
             continue
         fi
     else
         log_success "  Added $plugin"
-        ((ADDED++))
+        ADDED=$((ADDED+1))
     fi
 done
 
@@ -144,17 +144,17 @@ for plugin in "${to_enable[@]}"; do
     log_info "Enabling plugin: $plugin"
     if hyprpm enable "$plugin"; then
         log_success "  Enabled $plugin"
-        ((ENABLED++))
+        ENABLED=$((ENABLED+1))
     else
         log_error "  Failed to enable $plugin"
-        ((FAILED++))
+        FAILED=$((FAILED+1))
     fi
 done
 
 # Count already correct plugins (desired, installed, enabled)
 for plugin in "${!desired_plugins[@]}"; do
     if [[ -n "${installed_plugins[$plugin]:-}" ]] && [[ -n "${enabled_plugins[$plugin]:-}" ]]; then
-        ((SKIPPED++))
+        SKIPPED=$((SKIPPED+1))
     fi
 done
 
