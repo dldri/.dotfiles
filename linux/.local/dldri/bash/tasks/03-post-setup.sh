@@ -9,6 +9,17 @@ source "$SCRIPT_DIR/../lib/utils.sh"
 
 log_info "Running post-setup tasks..."
 
+# Configure git aliases
+if command -v git &>/dev/null; then
+    log_info "Configuring git aliases..."
+    if git config --global alias.lg &>/dev/null; then
+        log_info "Git alias 'lg' already exists, skipping"
+    else
+        git config --global alias.lg "log --oneline --graph --all"
+        log_success "Git alias 'lg' configured"
+    fi
+fi
+
 # Summary timestamp
 echo "========================================"
 echo "Dotfiles Bootstrap Complete"
