@@ -119,11 +119,7 @@ for plugin in "${to_add[@]}"; do
     uri="${desired_plugins[$plugin]}"
     log_info "Adding plugin: $plugin from $uri"
     
-    # Capture output and determine if error is due to existing repository
-    output=$(hyprpm add "$uri" 2>&1)
-    exit_code=$?
-    
-    if [[ $exit_code -ne 0 ]]; then
+    if ! output=$(hyprpm add "$uri" 2>&1); then
         if echo "$output" | grep -q "Repository already installed"; then
             log_warn "  Plugin $plugin already installed (repository exists), skipping add"
             # Plugin is installed, will be handled in enable phase
