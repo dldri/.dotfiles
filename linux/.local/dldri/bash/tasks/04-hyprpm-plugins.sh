@@ -21,21 +21,13 @@ if ! command -v hyprpm &>/dev/null; then
     exit 1
 fi
 
-# Update hyprpm plugin database to match Hyprland headers
-log_info "Updating hyprpm database..."
-if hyprpm update; then
-    log_success "hyprpm updated"
-else
-    log_warn "hyprpm update failed - continuing anyway (plugins may not be compatible)"
-fi
-
 # Read desired plugins from list file
 if [[ ! -f "$PLUGINS_LIST" ]]; then
     log_warn "Plugins list not found: $PLUGINS_LIST - skipping"
     exit 0
 fi
 
-declare -A desired_plugins  # name -> uri
+declare -A desired_plugins=()  # name -> uri
 while IFS= read -r line || [[ -n "$line" ]]; do
     [[ "$line" =~ ^# ]] && continue
     [[ -z "$line" ]] && continue
@@ -49,8 +41,8 @@ done < "$PLUGINS_LIST"
 log_info "Desired plugins: ${#desired_plugins[@]}"
 
 # Get currently installed plugins and their status
-declare -A installed_plugins  # name -> enabled status (true/false/other)
-declare -A enabled_plugins    # name -> true (only for enabled)
+declare -A installed_plugins=()  # name -> enabled status (true/false/other)
+declare -A enabled_plugins=()    # name -> true (only for enabled)
 
 current_plugin=""
 while IFS= read -r line || [[ -n "$line" ]]; do
@@ -150,6 +142,13 @@ for plugin in "${!desired_plugins[@]}"; do
 done
 
 log_success "Hyprpm sync complete. Removed: $REMOVED, Added: $ADDED, Enabled: $ENABLED, Already correct: $SKIPPED, Failed: $FAILED"
+
+log_info "Reloading Hyprland plugins..."
+if hyprpm reload; then
+    log_success "Plugins reloaded"
+else
+    log_warn "Reload failed (Hyprland may not be running)"
+fi
 
 if [[ $FAILED -gt 0 ]]; then
     exit 1
