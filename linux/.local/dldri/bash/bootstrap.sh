@@ -16,18 +16,20 @@ SKIP_CHECK=0
 SKIP_CLEANUP=0
 SKIP_PACKAGES=0
 SKIP_POST=0
+SKIP_HYPRPM_PLUGINS=0
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Bootstrap script: full system setup with dependencies, packages, and dotfiles"
     echo ""
     echo "Options:"
-    echo "  --dry-run        Show what would be done without doing it"
-    echo "  --skip-check     Skip dependency checks (00)"
-    echo "  --skip-cleanup   Skip package cleanup (01)"
-    echo "  --skip-packages  Skip package installation (02)"
-    echo "  --skip-post      Skip post-setup (03)"
-    echo "  --help           Show this help"
+    echo "  --dry-run              Show what would be done without doing it"
+    echo "  --skip-check           Skip dependency checks (00)"
+    echo "  --skip-cleanup         Skip package cleanup (01)"
+    echo "  --skip-packages        Skip package installation (02)"
+    echo "  --skip-post            Skip post-setup (03)"
+    echo "  --skip-hyprpm-plugins  Skip hyprpm plugin setup (04)"
+    echo "  --help                 Show this help"
     exit 0
 }
 
@@ -38,6 +40,7 @@ while [[ $# -gt 0 ]]; do
         --skip-cleanup) SKIP_CLEANUP=1 ;;
         --skip-packages) SKIP_PACKAGES=1 ;;
         --skip-post) SKIP_POST=1 ;;
+        --skip-hyprpm-plugins) SKIP_HYPRPM_PLUGINS=1 ;;
         --help) usage ;;
         *) echo "Unknown option: $1"; usage ;;
     esac
@@ -45,7 +48,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # If all skipped, nothing to do
-if [[ $SKIP_CHECK -eq 1 && $SKIP_CLEANUP -eq 1 && $SKIP_PACKAGES -eq 1 && $SKIP_POST -eq 1 ]]; then
+if [[ $SKIP_CHECK -eq 1 && $SKIP_CLEANUP -eq 1 && $SKIP_PACKAGES -eq 1 && $SKIP_POST -eq 1 && $SKIP_HYPRPM_PLUGINS -eq 1 ]]; then
     echo "Nothing to do. All steps skipped."
     exit 0
 fi
@@ -94,6 +97,7 @@ run_task "Dependency Check (00)"    "$SCRIPT_DIR/tasks/00-check-deps.sh"    $SKI
 run_task "Package Cleanup (01)"    "$SCRIPT_DIR/tasks/01-cleanup.sh"      $SKIP_CLEANUP
 run_task "Package Install (02)"    "$SCRIPT_DIR/tasks/02-packages.sh"     $SKIP_PACKAGES
 run_task "Post-Setup (03)"         "$SCRIPT_DIR/tasks/03-post-setup.sh"   $SKIP_POST
+run_task "Hyprpm Plugins (04)"     "$SCRIPT_DIR/tasks/04-hyprpm-plugins.sh" $SKIP_HYPRPM_PLUGINS
 
 # Calculate duration
 END_TIME=$(date +%s)

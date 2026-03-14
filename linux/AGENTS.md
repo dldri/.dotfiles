@@ -13,10 +13,11 @@ linux/.local/dldri/bash/
 │   ├── utils.sh         # Colors, logging, progress
 │   └── platform.sh      # OS/distro detection
 └── tasks/               # Individual setup steps (numbered for order)
-    ├── 00-check-deps.sh   # Verify prerequisites (bash, git, sudo, base-devel)
-    ├── 01-cleanup.sh      # Remove unwanted default packages (PLACEHOLDER)
-    ├── 02-packages.sh     # Install packages from ../../packages/linux-install.txt
-    └── 03-post-setup.sh   # Optional finalization (PLACEHOLDER)
+    ├── 00-check-deps.sh      # Verify prerequisites (bash, git, sudo, base-devel)
+    ├── 01-cleanup.sh         # Remove unwanted default packages
+    ├── 02-packages.sh        # Install packages from ../../packages/linux-install.txt
+    ├── 03-post-setup.sh      # Finalization and summary
+    └── 04-hyprpm-plugins.sh  # Manage Hyprland plugins via hyprpm
 ```
 
 **Note**: The legacy scripts (`setup.sh`, `install-packages.sh`, `remove-packages.sh`) are deprecated. Use `bootstrap.sh` for full system setup. Individual task scripts remain available for granular execution.
@@ -28,7 +29,7 @@ linux/.local/dldri/bash/
 **Usage**: `./bootstrap.sh`
 **Behavior**:
 
-- Executes tasks in order (00 → 03)
+- Executes tasks in order (00 → 04)
 - Exits on error (`set -e`)
 - Prints colored status messages
 - Idempotent (safe to re-run)
@@ -71,6 +72,17 @@ linux/.local/dldri/bash/
 - Suggests next steps (shell reload, Neovim Lazy sync, Hyprland reboot)
 - Cleans temporary build directories (e.g., `/tmp/yay-build`)
 - Informational only; no interactive prompts
+
+### 04-hyprpm-plugins.sh
+
+- Reads `packages/hyprland-plugins.txt` (blank lines and `#` comments ignored)
+- For each plugin URI:
+  - Extracts plugin name from the URI (last path segment)
+  - Uses `hyprpm` to add the plugin if not already added (`hyprpm add <uri>`)
+  - Enables the plugin if not already enabled (`hyprpm enable <plugin>`)
+- Requires `hyprpm` to be installed and available in PATH
+- Idempotent: safe to re-run; skips already added/enabled plugins
+- Prints status for each plugin; continues on errors, reports at end
 
 ## Standards
 

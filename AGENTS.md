@@ -20,6 +20,7 @@ Philosophy: Use package lists for dependency installation, and idempotent script
 ├── packages/                 # Package lists by platform (user-maintained)
 │   ├── common.txt           # Packages for all platforms
 │   ├── linux.txt            # Arch/AUR packages
+│   ├── hyprland-plugins.txt # Hyprland plugin URIs (managed by hyprpm)
 │   └── windows.txt          # Chocolatey packages
 ├── common/.config/           # Cross-platform configs (linked to $HOME/.config/)
 │   ├── nvim/                # Neovim (Lua) - main editor
@@ -27,13 +28,14 @@ Philosophy: Use package lists for dependency installation, and idempotent script
 │   ├── starship.toml        # Shell prompt
 │   └── yazi/                # File manager
 ├── linux/.local/dldri/bash/ # Linux bootstrap scripts
-│   ├── bootstrap.sh         # Main entry point **(TO BE CREATED)**
-│   ├── lib/                 # Shared utilities **(TO BE CREATED)**
-│   └── tasks/               # Individual setup steps **(TO BE CREATED)**
+│   ├── bootstrap.sh         # Main entry point
+│   ├── lib/                 # Shared utilities
+│   └── tasks/               # Individual setup steps
 │       ├── 00-check-deps.sh
-│       ├── 01-cleanup.sh    # Placeholder - user will define
+│       ├── 01-cleanup.sh
 │       ├── 02-packages.sh
-│       └── 03-post-setup.sh # Placeholder - user will define
+│       ├── 03-post-setup.sh
+│       └── 04-hyprpm-plugins.sh  # Manage Hyprland plugins
 └── windows/.config/         # Windows-specific configs (linked on Windows)
     ├── kanata/              # Keyboard remapping
     ├── komorebi/            # Tiling window manager
@@ -69,7 +71,8 @@ Philosophy: Use package lists for dependency installation, and idempotent script
    a. 00-check-deps.sh - Verify prerequisites (bash, git, sudo, base-devel)
    b. 01-cleanup.sh - Remove unwanted default packages (user-defined)
    c. 02-packages.sh - Install packages from ../../packages/linux-install.txt
-   d. 03-post-setup.sh - Optional finalization (placeholder)
+   d. 03-post-setup.sh - Finalization and summary
+   e. 04-hyprpm-plugins.sh - Install and enable Hyprland plugins via hyprpm
 ```
 
 **Idempotency**: All scripts should be safe to re-run. They must check for existing installations and skip if already present.
