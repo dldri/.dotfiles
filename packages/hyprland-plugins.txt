@@ -1,4 +1,4 @@
 # Hyprland plugins managed by hyprpm
 # Add plugin URIs (GitHub URLs or local paths) one per line
 
-https://github.com/shezdy/hyprsplit
+https://github.com/zjeffer/split-monitor-workspaces
