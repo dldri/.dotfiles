@@ -15,7 +15,6 @@ DRY_RUN=0
 SKIP_CHECK=0
 SKIP_CLEANUP=0
 SKIP_PACKAGES=0
-SKIP_STOW=0
 SKIP_POST=0
 
 usage() {
@@ -27,8 +26,7 @@ usage() {
     echo "  --skip-check     Skip dependency checks (00)"
     echo "  --skip-cleanup   Skip package cleanup (01)"
     echo "  --skip-packages  Skip package installation (02)"
-    echo "  --skip-stow      Skip stow symlinking (03)"
-    echo "  --skip-post      Skip post-setup (04)"
+    echo "  --skip-post      Skip post-setup (03)"
     echo "  --help           Show this help"
     exit 0
 }
@@ -39,7 +37,6 @@ while [[ $# -gt 0 ]]; do
         --skip-check) SKIP_CHECK=1 ;;
         --skip-cleanup) SKIP_CLEANUP=1 ;;
         --skip-packages) SKIP_PACKAGES=1 ;;
-        --skip-stow) SKIP_STOW=1 ;;
         --skip-post) SKIP_POST=1 ;;
         --help) usage ;;
         *) echo "Unknown option: $1"; usage ;;
@@ -48,7 +45,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # If all skipped, nothing to do
-if [[ $SKIP_CHECK -eq 1 && $SKIP_CLEANUP -eq 1 && $SKIP_PACKAGES -eq 1 && $SKIP_STOW -eq 1 && $SKIP_POST -eq 1 ]]; then
+if [[ $SKIP_CHECK -eq 1 && $SKIP_CLEANUP -eq 1 && $SKIP_PACKAGES -eq 1 && $SKIP_POST -eq 1 ]]; then
     echo "Nothing to do. All steps skipped."
     exit 0
 fi
@@ -96,8 +93,7 @@ run_task() {
 run_task "Dependency Check (00)"    "$SCRIPT_DIR/tasks/00-check-deps.sh"    $SKIP_CHECK
 run_task "Package Cleanup (01)"    "$SCRIPT_DIR/tasks/01-cleanup.sh"      $SKIP_CLEANUP
 run_task "Package Install (02)"    "$SCRIPT_DIR/tasks/02-packages.sh"     $SKIP_PACKAGES
-run_task "Stow Symlinks (03)"      "$SCRIPT_DIR/tasks/03-stow.sh"         $SKIP_STOW
-run_task "Post-Setup (04)"         "$SCRIPT_DIR/tasks/04-post-setup.sh"   $SKIP_POST
+run_task "Post-Setup (03)"         "$SCRIPT_DIR/tasks/03-post-setup.sh"   $SKIP_POST
 
 # Calculate duration
 END_TIME=$(date +%s)

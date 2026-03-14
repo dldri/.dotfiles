@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 04-post-setup.sh - Finalization and summary
+# 03-post-setup.sh - Finalization and summary
 
 set -euo pipefail
 

@@ -3,11 +3,12 @@
 ## Repository Purpose
 
 Cross-platform dotfiles repository for a reproducible, declarative development environment setup. Targets:
+
 - **Linux** (Arch-based) - primary platform with automated bootstrap
 - **Windows** - configuration files with planned Chocolatey bootstrap
 - **Common** - cross-platform applications shared across all platforms
 
-Philosophy: Use GNU Stow for symlink management, package lists for dependency installation, and idempotent scripts for reliable setup on any new machine.
+Philosophy: Use package lists for dependency installation, and idempotent scripts for reliable setup on any new machine. Symlinking of dotfiles is currently manual.
 
 ---
 
@@ -20,7 +21,7 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
 │   ├── common.txt           # Packages for all platforms
 │   ├── linux.txt            # Arch/AUR packages
 │   └── windows.txt          # Chocolatey packages
-├── common/.config/           # Cross-platform configs (stowed to $HOME/.config/)
+├── common/.config/           # Cross-platform configs (linked to $HOME/.config/)
 │   ├── nvim/                # Neovim (Lua) - main editor
 │   ├── wezterm/wezterm.lua  # Wezterm terminal emulator
 │   ├── starship.toml        # Shell prompt
@@ -32,9 +33,8 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
 │       ├── 00-check-deps.sh
 │       ├── 01-cleanup.sh    # Placeholder - user will define
 │       ├── 02-packages.sh
-│       ├── 03-stow.sh
-│       └── 04-post-setup.sh # Placeholder - user will define
-└── windows/.config/         # Windows-specific configs (stowed on Windows)
+│       └── 03-post-setup.sh # Placeholder - user will define
+└── windows/.config/         # Windows-specific configs (linked on Windows)
     ├── kanata/              # Keyboard remapping
     ├── komorebi/            # Tiling window manager
     ├── pwsh/profile.ps1     # PowerShell profile
@@ -45,11 +45,11 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
 
 ## Platform Support Strategy
 
-| Platform | Bootstrap | Package Manager | Stow Targets |
-|----------|-----------|-----------------|--------------|
-| Linux    | ✅ `bootstrap.sh` | yay (AUR) | `common/`, `linux/` |
-| Windows  | 🔜 Planned | Chocolatey | `common/`, `windows/` |
-| macOS    | ❌ Not yet | Homebrew | TBD |
+| Platform | Bootstrap         | Package Manager | Configs               |
+| -------- | ----------------- | --------------- | --------------------- |
+| Linux    | ✅ `bootstrap.sh` | yay (AUR)       | `common/`, `linux/`   |
+| Windows  | 🔜 Planned        | Chocolatey      | `common/`, `windows/` |
+| macOS    | ❌ Not yet        | Homebrew        | TBD                   |
 
 **Current status**: Linux bootstrap is the primary focus. Windows has configuration files but no automated installer yet.
 
@@ -69,8 +69,7 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
    a. 00-check-deps.sh - Verify prerequisites (bash, git, sudo, base-devel)
    b. 01-cleanup.sh - Remove unwanted default packages (user-defined)
    c. 02-packages.sh - Install packages from ../../packages/linux-install.txt
-   d. 03-stow.sh - Symlink dotfiles: stow common linux
-   e. 04-post-setup.sh - Optional finalization (placeholder)
+   d. 03-post-setup.sh - Optional finalization (placeholder)
 ```
 
 **Idempotency**: All scripts should be safe to re-run. They must check for existing installations and skip if already present.
@@ -80,17 +79,20 @@ Philosophy: Use GNU Stow for symlink management, package lists for dependency in
 ## Package Management Conventions
 
 ### Package List Format
+
 - One package name per line
 - Lines starting with `#` are comments
 - Blank lines are ignored
 - Packages are platform-specific (AUR names for Linux, Chocolatey names for Windows)
 
 ### Maintenance
+
 - **`packages/linux-install.txt`**: Arch/AUR packages. Order doesn't matter but group logically.
 - **`packages/windows.txt`**: Chocolatey package names. Validate with `choco search <pkg>`.
 - **`packages/common.txt`**: Cross-platform tools that should exist on all systems. Used to keep package lists in sync.
 
 When adding a new tool:
+
 1. Add package name to appropriate `packages/*.txt` file
 2. Ensure corresponding config exists in `common/`, `linux/`, or `windows/`
 3. Update AGENTS.md if structure changes
@@ -103,13 +105,14 @@ When adding a new tool:
 2. **Follow `.config/<app>/` structure**: Keep configs organized by application name
 3. **Add dependencies**: If the app needs a package, add it to the relevant `packages/*.txt`
 4. **Document**: Update the AGENTS.md in that folder if the config is significant
-5. **Stowable**: Ensure the folder can be symlinked directly (use relative paths inside configs)
+5. **Manual Link**: Ensure the folder can be linked manually or via future tooling (use relative paths inside configs)
 
 ---
 
 ## Existing Configurations Summary
 
 ### Neovim (`common/.config/nvim/`)
+
 - **Version**: Lua-based, requires Neovim ≥ 0.8 with LuaJIT
 - **Plugin Manager**: lazy.nvim (auto-installed on first run if missing)
 - **Configuration**:
@@ -143,6 +146,7 @@ When adding a new tool:
 - **Lock file**: `lazy-lock.json` committed for reproducible plugin versions
 
 ### Wezterm (`common/.config/wezterm/wezterm.lua`)
+
 - **Purpose**: Terminal emulator with tmux-like multiplexing
 - **Theme**: Catppuccin Mocha (matches Neovim)
 - **Keybindings** (Leader = `Ctrl-a`):
@@ -160,12 +164,14 @@ When adding a new tool:
 - **Default shell**: PowerShell on Windows, inherits on Linux
 
 ### Starship (`common/.config/starship.toml`)
+
 - Full configuration with all modules enabled
 - Catppuccin Mocha color scheme throughout
 - Shows: username, hostname, OS, directory, Git branch/status, package/node/python/rust/etc versions, battery, time, exit code, etc.
 - Designed for Nerd Fonts
 
 ### Yazi (`common/.config/yazi/`)
+
 - `yazi.toml`: minimal config, `show_hidden = true`
 - `theme.toml`: catppuccin-mocha colors (if customized)
 - `init.lua`: custom keymaps/commands (if any)
@@ -176,7 +182,7 @@ When adding a new tool:
 
 - [ ] **Windows bootstrap**: PowerShell script using Chocolatey (not implemented)
 - [ ] **Cleanup definition**: `01-cleanup.sh` contents to be specified by user
-- [ ] **Post-setup tasks**: `04-post-setup.sh` for Neovim plugin sync, shell config generation, etc.
+- [ ] **Post-setup tasks**: `03-post-setup.sh` for Neovim plugin sync, shell config generation, etc.
 - [ ] **macOS support**: Brewfile and bootstrap for macOS (future)
 - [ ] **Package list validation**: Need to verify all package names exist in AUR/Chocolatey
 - [ ] **Unified shell config**: `.bashrc`/`.zshrc` generation with starship, zoxide, etc. (currently Neovim only)
@@ -186,6 +192,7 @@ When adding a new tool:
 ## Standards for Agents
 
 When working in this repository:
+
 1. **Follow existing patterns**: Neovim config uses Lua modules in `lua/dldri/`; keep similar structure if adding plugins
 2. **Use package lists**: Never hardcode package names in scripts; always read from `packages/*.txt`
 3. **Keep scripts idempotent**: Check if command already ran, skip if done

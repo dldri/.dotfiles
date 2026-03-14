@@ -24,7 +24,7 @@ windows/
         └── whkdrc           # Window hotkey daemon config
 ```
 
-All files in `windows/.config/` are intended to be stowed to `%USERPROFILE%\.config\` (on Windows).
+All files in `windows/.config/` are intended to be linked to `%USERPROFILE%\.config\` (on Windows).
 
 ---
 
@@ -92,8 +92,7 @@ windows/.local/dldri/powershell/
     ├── 00-check-deps.ps1
     ├── 01-cleanup.ps1
     ├── 02-packages.ps1      # choco install from packages/windows.txt
-    ├── 03-stow.ps1          # stow common windows
-    └── 04-post-setup.ps1
+    └── 03-post-setup.ps1
 ```
 
 **Package Manager**: Chocolatey (community consensus). Alternatives: Scoop, winget.
@@ -117,7 +116,6 @@ All configs use Catppuccin Mocha for consistent theming across platforms.
 
 ## Notes for Agents
 
-- Stow on Windows: `stow -t $HOME common windows` (PowerShell: `$Env:USERPROFILE`)
 - Komorebi requires registry edit to replace Explorer (HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders)
 - Kanata runs as a service; WHKD runs as background process
 - Ensure Nerd Font (JetBrainsMono) installed for starship/wezterm icons

@@ -11,14 +11,12 @@ linux/.local/dldri/bash/
 ├── bootstrap.sh          # Main entry point (executable)
 ├── lib/                  # Shared utility functions
 │   ├── utils.sh         # Colors, logging, progress
-│   ├── platform.sh      # OS/distro detection
-│   └── stow.sh          # Stow wrapper with error handling
+│   └── platform.sh      # OS/distro detection
 └── tasks/               # Individual setup steps (numbered for order)
     ├── 00-check-deps.sh   # Verify prerequisites (bash, git, sudo, base-devel)
     ├── 01-cleanup.sh      # Remove unwanted default packages (PLACEHOLDER)
     ├── 02-packages.sh     # Install packages from ../../packages/linux-install.txt
-    ├── 03-stow.sh         # Symlink dotfiles: stow common linux
-    └── 04-post-setup.sh   # Optional finalization (PLACEHOLDER)
+    └── 03-post-setup.sh   # Optional finalization (PLACEHOLDER)
 ```
 
 **Note**: The legacy scripts (`setup.sh`, `install-packages.sh`, `remove-packages.sh`) are deprecated. Use `bootstrap.sh` for full system setup. Individual task scripts remain available for granular execution.
@@ -30,7 +28,7 @@ linux/.local/dldri/bash/
 **Usage**: `./bootstrap.sh`
 **Behavior**:
 
-- Executes tasks in order (00 → 04)
+- Executes tasks in order (00 → 03)
 - Exits on error (`set -e`)
 - Prints colored status messages
 - Idempotent (safe to re-run)
@@ -67,20 +65,7 @@ linux/.local/dldri/bash/
 - Print progress: "Installing <pkg>..." and "✓ <pkg> installed" or "⊘ <pkg> already up-to-date"
 - Handle failures gracefully (continue to next package, report errors at end)
 
-### 03-stow.sh
-
-- Change to repo root (`cd "$(git rev-parse --show-toplevel 2>/dev/null || echo ../..)"`)
-- Create backup of any existing conflicting dotfiles? (Decision needed)
-- Run: `stow -t $HOME --simulate common linux` → show plan
-- Prompt user to continue or abort
-- Run: `stow -t $HOME --verbose common linux` (with dynamic overrides from `packages/linux-overrides.txt`)
-- Report success/failures
-
-### Notes
-
-- **Overrides**: `stow.sh` reads `packages/linux-overrides.txt` for patterns that should always be overridden (e.g., `xdg-terminals.list`, `hypr/*.conf`). This ensures terminal preferences and Hyprland configs are fully managed declaratively. Add new patterns to that file as needed.
-
-### 04-post-setup.sh
+### 03-post-setup.sh
 
 - Prints a timestamped bootstrap completion summary
 - Suggests next steps (shell reload, Neovim Lazy sync, Hyprland reboot)
@@ -100,7 +85,6 @@ linux/.local/dldri/bash/
 This folder follows the repository-wide conventions defined in `../AGENTS.md`. See that file for:
 
 - Package list format and maintenance
-- Stow strategy details
 - Overall bootstrap workflow
 
 ---

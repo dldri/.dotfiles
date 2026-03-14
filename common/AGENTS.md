@@ -21,16 +21,7 @@ common/
         └── yazi.toml
 ```
 
-All files in `common/.config/` are intended to be stowed directly to `$HOME/.config/` using GNU Stow.
-
----
-
-## Stow Behavior
-
-- **Target**: `$HOME/.config/`
-- **Command**: `stow -t $HOME common`
-- **Effect**: Creates symlinks from `common/.config/*` to `$HOME/.config/*`
-- **Idempotent**: Safe to run multiple times; will overwrite existing symlinks or skip unchanged files
+All files in `common/.config/` are intended to be linked directly to `$HOME/.config/`.
 
 ---
 
@@ -185,7 +176,6 @@ All are listed in `packages/common.txt`.
 - Keep all paths relative; never assume absolute `$HOME` paths in configs
 - When adding new common applications, update this AGENTS.md and `packages/common.txt`
 - Neovim's `lazy-lock.json` should be committed to lock plugin versions
-- If Stow conflicts arise (existing files), use `stow --override` or manual resolution
 - Test configs on fresh installations regularly to ensure idempotency
 
 ---
