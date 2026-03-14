@@ -16,3 +16,6 @@ wezterm-git
 
 # Fonts (Nerd Fonts for icons)
 ttf-nerd-fonts-symbols-mono
+
+#Browser
+zen-browser-bin
