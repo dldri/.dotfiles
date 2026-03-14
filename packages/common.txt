@@ -6,3 +6,8 @@ zoxide
 git
 ripgrep
 fzf
+
+# Package managers & runtimes
+nodejs
+npm
+pnpm
