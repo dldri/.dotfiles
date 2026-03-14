@@ -58,7 +58,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
         fi
         current_plugin=""
     fi
-done < <(hyprpm list 2>/dev/null || true)
+    done < <(hyprpm list 2>&1 | sed 's/\x1b\[[0-9;]*m//g' || true)
 
 log_info "Currently installed: ${#installed_plugins[@]} (enabled: ${#enabled_plugins[@]})"
 
@@ -105,7 +105,7 @@ for plugin in "${to_remove[@]}"; do
         log_info "Disabling plugin: $plugin"
         hyprpm disable "$plugin" 2>/dev/null || true
     fi
-    if hyprpm remove "$plugin" 2>/dev/null; then
+     if hyprpm remove "$plugin" 2>/dev/null; then
         log_success "  Removed $plugin"
         ((REMOVED++))
     else
@@ -170,3 +170,5 @@ fi
 if [[ $FAILED -gt 0 ]]; then
     exit 1
 fi
+
+exit 0
