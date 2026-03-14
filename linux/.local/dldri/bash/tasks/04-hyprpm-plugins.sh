@@ -46,19 +46,17 @@ declare -A enabled_plugins=()    # name -> true (only for enabled)
 
 current_plugin=""
 while IFS= read -r line || [[ -n "$line" ]]; do
-    # Match plugin name line: "│ Plugin <name>"
-    if [[ "$line" =~ ^[[:space:]]*[\|][[:space:]]*Plugin[[:space:]]+(.+)$ ]]; then
+    # Extract plugin name from lines containing "Plugin <name>"
+    if [[ $line =~ Plugin[[:space:]]+(.+) ]]; then
         current_plugin="${BASH_REMATCH[1]}"
-    # Match enabled status line: "└─ enabled: <status>"
-    elif [[ "$line" =~ ^[[:space:]]*[\└─][[:space:]]*enabled:[[:space:]]*(.+)$ ]]; then
-        if [[ -n "$current_plugin" ]]; then
-            status="${BASH_REMATCH[1]}"
-            installed_plugins["$current_plugin"]="$status"
-            if [[ "$status" == "true" ]]; then
-                enabled_plugins["$current_plugin"]="true"
-            fi
-            current_plugin=""
+    # Extract enabled status from lines containing "enabled: <status>"
+    elif [[ $line =~ enabled:[[:space:]]*(true|false) ]] && [[ -n "$current_plugin" ]]; then
+        status="${BASH_REMATCH[1]}"
+        installed_plugins["$current_plugin"]="$status"
+        if [[ "$status" == "true" ]]; then
+            enabled_plugins["$current_plugin"]="true"
         fi
+        current_plugin=""
     fi
 done < <(hyprpm list 2>/dev/null || true)
 
