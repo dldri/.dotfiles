@@ -17,6 +17,7 @@ SKIP_CLEANUP=0
 SKIP_PACKAGES=0
 SKIP_POST=0
 SKIP_HYPRPM_PLUGINS=0
+SKIP_WEBAPPS=0
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
@@ -29,7 +30,8 @@ usage() {
     echo "  --skip-packages        Skip package installation (02)"
     echo "  --skip-post            Skip post-setup (03)"
     echo "  --skip-hyprpm-plugins  Skip hyprpm plugin setup (04)"
-    echo "  --help                 Show this help"
+    echo "  --skip-webapps        Skip web app cleanup (05)"
+    echo "  --help                Show this help"
     exit 0
 }
 
@@ -41,6 +43,7 @@ while [[ $# -gt 0 ]]; do
         --skip-packages) SKIP_PACKAGES=1 ;;
         --skip-post) SKIP_POST=1 ;;
         --skip-hyprpm-plugins) SKIP_HYPRPM_PLUGINS=1 ;;
+        --skip-webapps) SKIP_WEBAPPS=1 ;;
         --help) usage ;;
         *) echo "Unknown option: $1"; usage ;;
     esac
@@ -48,7 +51,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # If all skipped, nothing to do
-if [[ $SKIP_CHECK -eq 1 && $SKIP_CLEANUP -eq 1 && $SKIP_PACKAGES -eq 1 && $SKIP_POST -eq 1 && $SKIP_HYPRPM_PLUGINS -eq 1 ]]; then
+if [[ $SKIP_CHECK -eq 1 && $SKIP_CLEANUP -eq 1 && $SKIP_PACKAGES -eq 1 && $SKIP_POST -eq 1 && $SKIP_HYPRPM_PLUGINS -eq 1 && $SKIP_WEBAPPS -eq 1 ]]; then
     echo "Nothing to do. All steps skipped."
     exit 0
 fi
@@ -98,6 +101,7 @@ run_task "Package Cleanup (01)"    "$SCRIPT_DIR/tasks/01-cleanup.sh"      $SKIP_
 run_task "Package Install (02)"    "$SCRIPT_DIR/tasks/02-packages.sh"     $SKIP_PACKAGES
 run_task "Post-Setup (03)"         "$SCRIPT_DIR/tasks/03-post-setup.sh"   $SKIP_POST
 run_task "Hyprpm Plugins (04)"     "$SCRIPT_DIR/tasks/04-hyprpm-plugins.sh" $SKIP_HYPRPM_PLUGINS
+run_task "Web App Cleanup (05)"    "$SCRIPT_DIR/tasks/05-remove-webapps.sh"  $SKIP_WEBAPPS
 
 # Calculate duration
 END_TIME=$(date +%s)
