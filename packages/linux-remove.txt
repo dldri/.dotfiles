@@ -9,3 +9,4 @@ alacritty
 obsidian
 signal-desktop
 typora
+xournalpp
