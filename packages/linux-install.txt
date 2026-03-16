@@ -27,3 +27,6 @@ zen-browser-bin
 
 # Password Manager
 bitwarden
+
+# Entertainment
+spicetify-cli
