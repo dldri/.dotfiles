@@ -20,6 +20,23 @@ if command -v git &>/dev/null; then
     fi
 fi
 
+# --- Tailscale Setup ---
+log_info "Setting up Tailscale..."
+
+# Enable and start tailscaled service (idempotent - safe to re-run)
+if systemctl is-active --quiet tailscaled; then
+    log_info "tailscaled service is already running"
+else
+    log_info "Enabling and starting tailscaled service..."
+    if sudo systemctl enable --now tailscaled; then
+        log_success "tailscaled service enabled and started"
+    else
+        log_warn "Failed to enable/start tailscaled service"
+    fi
+fi
+
+echo ""
+
 # Summary timestamp
 echo "========================================"
 echo "Dotfiles Bootstrap Complete"
@@ -64,4 +81,4 @@ for dir in "${TEMP_DIRS[@]}"; do
     fi
 done
 
-log_success "Bootstrap finished! Enjoy your new setup."
+log_success "Post-setup tasks completed."

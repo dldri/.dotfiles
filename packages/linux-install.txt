@@ -30,3 +30,6 @@ bitwarden
 
 # Entertainment
 spicetify-cli
+
+# Networking
+tailscale

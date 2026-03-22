@@ -124,6 +124,10 @@ if [[ ${#FAILED_TASKS[@]} -eq 0 ]]; then
     echo "  • Reload your shell: source ~/.bashrc (or ~/.zshrc)"
     echo "  • Sync Neovim plugins: nvim --headless +'Lazy! sync' +qa"
     echo "  • Reboot to start Hyprland (if installed)"
+    echo ""
+    echo "Post-Setup Todo:"
+    echo "  □ sudo tailscale up    # Authenticate and connect to Tailscale network"
+    echo ""
     exit 0
 else
     log_error "The following tasks failed:"
