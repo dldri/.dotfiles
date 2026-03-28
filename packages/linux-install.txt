@@ -1,5 +1,6 @@
 # Core tools (not included in Omarchy base install)
 curl
+downgrade
 
 # Archiving (not included in Omarchy base install)
 7zip
